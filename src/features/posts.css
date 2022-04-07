@@ -1,0 +1,18 @@
+.post-container {
+    border: solid;
+    margin-bottom: 5px;
+    width: 50%;
+
+    padding: 5px
+}
+
+.post-title {
+    display: flex;
+    justify-content: space-between;
+    border: solid;
+}
+
+.content-text-area {
+    width: calc(100% - 5px);
+    resize: vertical;
+}

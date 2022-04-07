@@ -1,56 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
+import Post from './features/posts';
+import {Post as PostModel} from './features/models/Post'
+import AddPost from './features/addPost';
 
 function App() {
+
+  const posts: PostModel[] = [
+    {
+      id: 1,
+      title: 'New strings',
+      content: 'Got a new set of strings for the violin',
+      createDate: new Date(2022,14,22,10,50,0)
+    },
+    {
+      id: 2,
+      title: 'broke the E string (again)',
+      content: 'Yeah so i was playing mendelssohn violin concerto and out of nowhere my E string broke...',
+      createDate: new Date(2022,14,22,10,30,0)
+    }
+  ]
+  
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+
+      <AddPost></AddPost>
+      {
+        posts.map(p => <Post key={p.id} post={p}></Post>)
+      }
     </div>
   );
 }
