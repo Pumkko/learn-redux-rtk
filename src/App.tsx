@@ -1,15 +1,15 @@
 import React from "react";
 import "./App.css";
-import Post from "./features/posts";
 import AddPost from "./features/addPost";
-import { useGetAllPostsQuery } from "./features/postApi";
+import { useQuery } from "react-query";
+import { Post as PostModel } from "./features/models/Post";
+import Post from "./features/posts";
+
 
 function App() {
-  const { data, isLoading } = useGetAllPostsQuery(undefined);
 
-  if(isLoading){
-    return (<div>Loading...</div>)
-  }
+  const { data } = useQuery<Array<PostModel>>('posts');
+
   if (data) {
     return (
       <div className="App">
@@ -20,8 +20,10 @@ function App() {
       </div>
     );
   }
+  else {
+    return <div>I'm either dead or working</div>
+  }
 
-  return <div>Sorry something happened</div>
 }
 
 export default App;
