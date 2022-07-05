@@ -43,7 +43,7 @@ const AddPost: React.FC = () => {
             old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
         );
       },
-      retry: 3,
+      retry: 1,
     }
   );
 
