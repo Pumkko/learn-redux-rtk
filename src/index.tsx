@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { QueryClientProvider } from "react-query";
-import { queryClient } from "./app/queryClient";
+import queryClient from "./app/queryClient";
 
 const container = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(container);
