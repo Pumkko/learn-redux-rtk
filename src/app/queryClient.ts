@@ -61,7 +61,7 @@ queryClient.setMutationDefaults("post", {
         old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
     );
   },
-  retry: 2,
+  retry: 1,
 });
 
 export default queryClient;

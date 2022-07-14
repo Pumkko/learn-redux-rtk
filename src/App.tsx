@@ -14,7 +14,7 @@ function App() {
       queryClient: queryClient,
       persistor: createWebStoragePersistor({
         storage: window.localStorage,
-        throttleTime: 100
+        throttleTime: 100,
       }),
       maxAge: Infinity,
     });
