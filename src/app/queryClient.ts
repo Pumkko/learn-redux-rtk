@@ -13,10 +13,15 @@ const queryClient = new QueryClient({
   },
 });
 
-queryClient.setQueryDefaults("posts", {
+queryClient.setQueryDefaults(["general"], {
   queryFn: async () => {
     const { data } = await axios.get(`https://localhost:7185/Post`);
     return data;
+  },
+  onSuccess(data) {
+    const post = data as Post[];
+    const d = queryClient.setQueryData(['posts'], post);
+    console.log(d);
   },
 });
 
