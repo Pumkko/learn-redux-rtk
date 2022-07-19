@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
 
 queryClient.setQueryDefaults(["general"], {
   queryFn: async () => {
-    const { data } = await axios.get(`https://localhost:7185/Post`);
+    const { data } = await axios.get(`https://pwa-react-violinews.azurewebsites.net/Post`);
     return data;
   },
   onSuccess(data) {
@@ -27,7 +27,7 @@ queryClient.setQueryDefaults(["general"], {
 
 queryClient.setMutationDefaults("post", {
   mutationFn: (post) =>
-    axios.post(`https://localhost:7185/Post`, {
+    axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
       id: uuid(),
       creationDate: new Date().toLocaleDateString(),
       ...post,

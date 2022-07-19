@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://localhost:7185/postHub", { withCredentials: false })
+      .withUrl("https://pwa-react-violinews.azurewebsites.net/postHub", { withCredentials: false })
       .withAutomaticReconnect()
       .build();
 
