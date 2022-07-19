@@ -10,7 +10,6 @@ import queryClient from "./app/queryClient";
 import {
   HubConnection,
   HubConnectionBuilder,
-  LogLevel,
 } from "@microsoft/signalr";
 
 persistQueryClient({
