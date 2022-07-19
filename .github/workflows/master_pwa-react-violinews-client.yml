@@ -27,12 +27,8 @@ jobs:
           npm run build --if-present
       
       - name: Copy web.config file
-        uses: canastro/copy-action@0.0.2
-        with:
-          # Source file
-          source: ./web.config
-          # Target file
-          target: ./build
+        run: |
+          cp "./web.config" "./build/web.config"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
