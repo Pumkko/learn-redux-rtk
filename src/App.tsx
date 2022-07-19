@@ -1,31 +1,16 @@
 import "./App.css";
 import AddPost from "./features/addPost";
-import { useQuery } from "react-query";
 import { Post as PostModel } from "./features/models/Post";
 import Post from "./features/posts";
-import { createWebStoragePersistor } from "react-query/createWebStoragePersistor-experimental";
-import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { useEffect, useState } from "react";
-import queryClient from "./app/queryClient";
-import {
-  HubConnection,
-  HubConnectionBuilder,
-} from "@microsoft/signalr";
-
-persistQueryClient({
-  queryClient: queryClient,
-  persistor: createWebStoragePersistor({
-    storage: window.localStorage,
-    throttleTime: 100,
-  }),
-  maxAge: Infinity,
-});
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
-  const { refetch } = useQuery("general", {
+  const { refetch } = useQuery(["general"], {
     enabled: false,
   });
-  const { data } = useQuery<PostModel[]>("posts", {
+  const { data } = useQuery<PostModel[]>(["posts"], {
     enabled: false,
   });
 
@@ -35,7 +20,9 @@ function App() {
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://pwa-react-violinews.azurewebsites.net/postHub", { withCredentials: false })
+      .withUrl("https://pwa-react-violinews.azurewebsites.net/postHub", {
+        withCredentials: false,
+      })
       .withAutomaticReconnect()
       .build();
 
@@ -49,8 +36,8 @@ function App() {
         .then(() => {
           console.log("Connected!");
 
-          connection.on("ReceiveMessage", (message) => {
-            alert('New post')
+          connection.on("ReceiveMessage", () => {
+            alert("New post");
           });
         })
         .catch((e) => console.log("Connection failed: ", e));

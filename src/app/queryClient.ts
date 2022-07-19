@@ -1,9 +1,14 @@
 import axios from "axios";
-import { QueryClient } from "react-query";
 
 import { CreatePostCommand } from "../features/models/CreatePostCommand";
 import { Post } from "../features/models/Post";
 import { v4 as uuid } from "uuid";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+
+export const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +30,7 @@ queryClient.setQueryDefaults(["general"], {
   },
 });
 
-queryClient.setMutationDefaults("post", {
+queryClient.setMutationDefaults(["createPosts"], {
   mutationFn: (post) =>
     axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
       id: uuid(),
@@ -34,7 +39,7 @@ queryClient.setMutationDefaults("post", {
     }),
   onMutate: async (post: CreatePostCommand) => {
     // Cancel current queries for the todos list
-    await queryClient.cancelQueries("posts");
+    await queryClient.cancelQueries(["posts"]);
 
     // Create optimistic todo
     const optimisticPost: Post = {
@@ -44,7 +49,7 @@ queryClient.setMutationDefaults("post", {
     };
 
     // Add optimistic todo to todos list
-    queryClient.setQueryData<Array<Post>>("posts", (old) => {
+    queryClient.setQueryData<Array<Post>>(["posts"], (old) => {
       if (old) {
         return [...old, optimisticPost];
       } else {
@@ -61,7 +66,7 @@ queryClient.setMutationDefaults("post", {
     }
     // Remove optimistic todo from the todos list
     queryClient.setQueryData<Array<Post>>(
-      "posts",
+      ["posts"],
       (old) =>
         old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
     );

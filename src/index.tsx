@@ -3,18 +3,25 @@ import * as ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorkerRegistration";
-import { QueryClientProvider } from "react-query";
-import queryClient from "./app/queryClient";
+import queryClient, { persister } from "./app/queryClient";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
 const container = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(container);
 
 root.render(
-  <QueryClientProvider client={queryClient}>
+  <PersistQueryClientProvider
+    client={queryClient}
+    persistOptions={{ persister }}
+    onSuccess={() => {
+      // resume mutations after initial restore from localStorage was successful
+      queryClient.resumePausedMutations()
+    }}
+  >
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  </QueryClientProvider>
+  </PersistQueryClientProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

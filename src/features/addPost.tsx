@@ -1,10 +1,10 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { useMutation } from "react-query";
 import { CreatePostCommand } from "./models/CreatePostCommand";
 import "./posts.css";
 
 const AddPost: React.FC = () => {
-  const mutation = useMutation<any, any, CreatePostCommand>('post');
+  const mutation = useMutation<any, any, CreatePostCommand>(['createPosts']);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
