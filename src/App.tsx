@@ -47,7 +47,7 @@ function App() {
     if (connection) {
       connection
         .start()
-        .then((result) => {
+        .then(() => {
           console.log("Connected!");
 
           connection.on("ReceiveMessage", (message) => {
