@@ -7,6 +7,11 @@
   justify-content: center;
 }
 
+.alert {
+  width: 50%;
+  text-align: center;
+}
+
 .accordion  {
   width: 50%;
 }

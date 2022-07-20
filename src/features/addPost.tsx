@@ -54,7 +54,6 @@ const AddPost = ({ onClose }: AddPostProps) => {
               content,
               title,
             });
-
             onClose();
           }}
         >

@@ -8,36 +8,53 @@ import { onlineManager, QueryClient } from "@tanstack/react-query";
 
 export const persister = createSyncStoragePersister({
   storage: window.localStorage,
-})
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: Infinity,
-      networkMode: 'offlineFirst'
     },
     mutations: {
       cacheTime: Infinity,
-      networkMode: 'offlineFirst'
-    }
+    },
   },
 });
 
+queryClient.setQueryDefaults(["healthCheck"], {
+  networkMode: "always",
+  queryFn: async () => {
+    const response = await axios.get(
+      `https://pwa-react-violinews.azurewebsites.net/health`
+    );
+    return response.data;
+  },
+  refetchInterval: 5000,
+  onSuccess: () => {
+    onlineManager.setOnline(true);
+    queryClient.resumePausedMutations();
+  },
+  onError: (error) => {
+    console.log(error);
+    onlineManager.setOnline(false);
+  },
+});
 
 queryClient.setQueryDefaults(["general"], {
   queryFn: async () => {
-    const { data } = await axios.get(`https://pwa-react-violinews.azurewebsites.net/Post`);
+    const { data } = await axios.get(
+      `https://pwa-react-violinews.azurewebsites.net/Post`
+    );
     return data;
   },
-  onSuccess(data) {
+  onSuccess: (data) => {
     const post = data as Post[];
-    const d = queryClient.setQueryData(['posts'], post);
+    const d = queryClient.setQueryData(["posts"], post);
     console.log(d);
   },
 });
 
 queryClient.setMutationDefaults(["createPosts"], {
-  networkMode: 'offlineFirst',
   mutationFn: (post) =>
     axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
       id: uuid(),
@@ -68,19 +85,20 @@ queryClient.setMutationDefaults(["createPosts"], {
     return { optimisticPost };
   },
   onError: (error, variables, context) => {
-    if (error.code === "ERR_NETWORK") {
-      onlineManager.setOnline(false);
-      return;
-    }
-
-    // Remove optimistic todo from the todos list
     queryClient.setQueryData<Array<Post>>(
       ["posts"],
       (old) =>
         old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
     );
   },
-  retry: 1,
+  retry: (failureCount, error) => {
+    if (error.code === "ERR_NETWORK") {
+      onlineManager.setOnline(false);
+      return true;
+    }
+
+    return failureCount < 2;
+  },
 });
 
 export default queryClient;

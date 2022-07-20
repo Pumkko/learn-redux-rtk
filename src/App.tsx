@@ -1,24 +1,21 @@
 import "./App.css";
-import AddPost from "./features/addPost";
 import { Post as PostModel } from "./features/models/Post";
-import PostItem from "./features/postItem";
 import { useEffect, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { onlineManager, useQuery } from "@tanstack/react-query";
-import { Accordion, Button } from "react-bootstrap";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostList } from "./features/postList";
+import { Alert, Button } from "react-bootstrap";
 
 function App() {
-  const { refetch } = useQuery(["general"], {
-    enabled: false,
-  });
   const { data: posts } = useQuery<PostModel[]>(["posts"], {
     enabled: false,
   });
 
-  const [showPost, setShowPost] = useState(false);
+  const { refetch } = useQuery(["general"], {
+    enabled: false,
+  });
+
   const [connection, setConnection] = useState<HubConnection | null>(null);
-  
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -27,7 +24,6 @@ function App() {
       })
       .withAutomaticReconnect()
       .build();
-
     setConnection(newConnection);
   }, []);
 
@@ -46,36 +42,37 @@ function App() {
     }
   }, [connection]);
 
-  if (showPost) {
-    return (
+  const { isSuccess } = useQuery(["healthCheck"]);
+
+  const queryClient = useQueryClient();
+
+  const [isOnline, setIsOnline] = useState(false);
+
+  useEffect(() => {
+    setIsOnline(isSuccess);
+  }, [isSuccess, queryClient]);
+
+  return (
+    <>
       <div className="App">
-        <PostList posts={posts ?? []}/>
-      </div>
-    );
-  } else {
-    return (
-      <div className="d-flex justify-content-center align-items-center h-100">
+        {isOnline ? (
+          <Alert variant="success">Online</Alert>
+        ) : (
+          <Alert variant="danger">Offline</Alert>
+        )}
+        <PostList posts={posts ?? []} />
         <Button
-          className="mx-2"
-          variant="primary"
+          className="m-2"
+          variant="warning"
           onClick={() => {
             refetch();
           }}
         >
-          Prefetch
-        </Button>
-        <Button
-          className="mx-2"
-          variant="primary"
-          onClick={() => {
-            setShowPost(true);
-          }}
-        >
-          Show data
+          Refetch
         </Button>
       </div>
-    );
-  }
+    </>
+  );
 }
 
 export default App;

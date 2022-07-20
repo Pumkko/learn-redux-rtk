@@ -6,11 +6,13 @@ import * as serviceWorker from "./serviceWorkerRegistration";
 import queryClient, { persister } from "./app/queryClient";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import '@fortawesome/fontawesome-svg-core/styles.css'
+config.autoAddCss = false;
 
 const container = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(container);
-
 
 root.render(
   <PersistQueryClientProvider
