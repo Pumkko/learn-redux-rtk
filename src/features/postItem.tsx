@@ -6,7 +6,7 @@ interface PostProps {
   post: PostModel;
 }
 
-const Post: React.FC<PostProps> = ({ post }: PostProps) => {
+const PostItem: React.FC<PostProps> = ({ post }: PostProps) => {
   return (
     <Accordion.Item eventKey="0">
       <Accordion.Header>{post.title}</Accordion.Header>
@@ -15,4 +15,4 @@ const Post: React.FC<PostProps> = ({ post }: PostProps) => {
   );
 };
 
-export default Post;
+export default PostItem;

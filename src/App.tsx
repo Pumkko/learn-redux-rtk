@@ -1,23 +1,24 @@
 import "./App.css";
 import AddPost from "./features/addPost";
 import { Post as PostModel } from "./features/models/Post";
-import Post from "./features/posts";
+import PostItem from "./features/postItem";
 import { useEffect, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { onlineManager, useQuery } from "@tanstack/react-query";
 import { Accordion, Button } from "react-bootstrap";
+import { PostList } from "./features/postList";
 
 function App() {
   const { refetch } = useQuery(["general"], {
     enabled: false,
   });
-  const { data } = useQuery<PostModel[]>(["posts"], {
+  const { data: posts } = useQuery<PostModel[]>(["posts"], {
     enabled: false,
   });
 
   const [showPost, setShowPost] = useState(false);
   const [connection, setConnection] = useState<HubConnection | null>(null);
-  const [showAddNewPost, setShowAddNewPost] = useState(false);
+  
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -48,25 +49,7 @@ function App() {
   if (showPost) {
     return (
       <div className="App">
-        <Accordion defaultActiveKey="0" flush>
-          {data &&
-            data
-              .sort(
-                (a, b) =>
-                  Date.parse(b.creationDate) - Date.parse(a.creationDate)
-              )
-              .map((p) => <Post key={p.id} post={p}></Post>)}
-        </Accordion>
-        <Button
-          className="mt-3"
-          variant="primary"
-          onClick={() => setShowAddNewPost(true)}
-        >
-          Add Post
-        </Button>
-        {showAddNewPost && (
-          <AddPost onClose={() => setShowAddNewPost(false)}></AddPost>
-        )}
+        <PostList posts={posts ?? []}/>
       </div>
     );
   } else {
