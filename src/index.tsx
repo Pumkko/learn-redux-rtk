@@ -6,8 +6,11 @@ import * as serviceWorker from "./serviceWorkerRegistration";
 import queryClient, { persister } from "./app/queryClient";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const container = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(container);
+
 
 root.render(
   <PersistQueryClientProvider
@@ -15,7 +18,7 @@ root.render(
     persistOptions={{ persister }}
     onSuccess={() => {
       // resume mutations after initial restore from localStorage was successful
-      queryClient.resumePausedMutations()
+      queryClient.resumePausedMutations();
     }}
   >
     <React.StrictMode>

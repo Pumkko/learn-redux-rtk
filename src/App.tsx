@@ -4,7 +4,8 @@ import { Post as PostModel } from "./features/models/Post";
 import Post from "./features/posts";
 import { useEffect, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { useQuery } from "@tanstack/react-query";
+import { onlineManager, useQuery } from "@tanstack/react-query";
+import { Accordion, Button } from "react-bootstrap";
 
 function App() {
   const { refetch } = useQuery(["general"], {
@@ -15,8 +16,8 @@ function App() {
   });
 
   const [showPost, setShowPost] = useState(false);
-
   const [connection, setConnection] = useState<HubConnection | null>(null);
+  const [showAddNewPost, setShowAddNewPost] = useState(false);
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -47,32 +48,48 @@ function App() {
   if (showPost) {
     return (
       <div className="App">
-        <AddPost></AddPost>
-        {data &&
-          data
-            .sort(
-              (a, b) => Date.parse(b.creationDate) - Date.parse(a.creationDate)
-            )
-            .map((p) => <Post key={p.id} post={p}></Post>)}
+        <Accordion defaultActiveKey="0" flush>
+          {data &&
+            data
+              .sort(
+                (a, b) =>
+                  Date.parse(b.creationDate) - Date.parse(a.creationDate)
+              )
+              .map((p) => <Post key={p.id} post={p}></Post>)}
+        </Accordion>
+        <Button
+          className="mt-3"
+          variant="primary"
+          onClick={() => setShowAddNewPost(true)}
+        >
+          Add Post
+        </Button>
+        {showAddNewPost && (
+          <AddPost onClose={() => setShowAddNewPost(false)}></AddPost>
+        )}
       </div>
     );
   } else {
     return (
-      <div>
-        <button
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <Button
+          className="mx-2"
+          variant="primary"
           onClick={() => {
             refetch();
           }}
         >
           Prefetch
-        </button>
-        <button
+        </Button>
+        <Button
+          className="mx-2"
+          variant="primary"
           onClick={() => {
             setShowPost(true);
           }}
         >
           Show data
-        </button>
+        </Button>
       </div>
     );
   }

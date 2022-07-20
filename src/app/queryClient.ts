@@ -4,7 +4,7 @@ import { CreatePostCommand } from "../features/models/CreatePostCommand";
 import { Post } from "../features/models/Post";
 import { v4 as uuid } from "uuid";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { onlineManager, QueryClient } from "@tanstack/react-query";
 
 export const persister = createSyncStoragePersister({
   storage: window.localStorage,
@@ -14,9 +14,15 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: Infinity,
+      networkMode: 'offlineFirst'
     },
+    mutations: {
+      cacheTime: Infinity,
+      networkMode: 'offlineFirst'
+    }
   },
 });
+
 
 queryClient.setQueryDefaults(["general"], {
   queryFn: async () => {
@@ -31,6 +37,7 @@ queryClient.setQueryDefaults(["general"], {
 });
 
 queryClient.setMutationDefaults(["createPosts"], {
+  networkMode: 'offlineFirst',
   mutationFn: (post) =>
     axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
       id: uuid(),
@@ -62,8 +69,10 @@ queryClient.setMutationDefaults(["createPosts"], {
   },
   onError: (error, variables, context) => {
     if (error.code === "ERR_NETWORK") {
+      onlineManager.setOnline(false);
       return;
     }
+
     // Remove optimistic todo from the todos list
     queryClient.setQueryData<Array<Post>>(
       ["posts"],

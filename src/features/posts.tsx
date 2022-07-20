@@ -1,27 +1,18 @@
-
-import {Post as PostModel} from './models/Post'
-import './posts.css'
+import { Accordion } from "react-bootstrap";
+import { Post as PostModel } from "./models/Post";
+import "./posts.css";
 
 interface PostProps {
-    post: PostModel
+  post: PostModel;
 }
 
-const Post: React.FC<PostProps> = ({post}: PostProps) => {
-
-
-    return (
-        <div className='post-container'>
-            <div className='post-title'>
-                <span>{post.title}</span>
-                <span>{new Date(post.creationDate).toDateString()}</span>
-            </div>
-            <div>{post.content}</div>
-            <button onClick={() => {
-                console.log(post.id)
-            }}>Delete</button>
-        </div>
-    )
-
-}
+const Post: React.FC<PostProps> = ({ post }: PostProps) => {
+  return (
+    <Accordion.Item eventKey="0">
+      <Accordion.Header>{post.title}</Accordion.Header>
+      <Accordion.Body>{post.content}</Accordion.Body>
+    </Accordion.Item>
+  );
+};
 
 export default Post;
