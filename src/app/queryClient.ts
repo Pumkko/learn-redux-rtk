@@ -56,7 +56,7 @@ queryClient.setQueryDefaults(["general"], {
 
 queryClient.setMutationDefaults(["createPosts"], {
   mutationFn: (post) =>
-    axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
+    axios.post(`https://localhost:7185/Post`, {
       id: uuid(),
       creationDate: new Date().toLocaleDateString(),
       ...post,
@@ -97,7 +97,7 @@ queryClient.setMutationDefaults(["createPosts"], {
       return true;
     }
 
-    return failureCount < 2;
+    return false;
   },
 });
 
