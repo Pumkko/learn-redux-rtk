@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Accordion, Button } from "react-bootstrap";
 import AddPost from "./addPost";
@@ -10,6 +11,9 @@ export interface PostListProps {
 
 export const PostList = ({ posts }: PostListProps) => {
   const [showAddNewPost, setShowAddNewPost] = useState(false);
+
+  const fakeUpdate = useMutation<unknown, unknown, Post>(['updatePost']);
+
   return (
     <>
       <Accordion defaultActiveKey="0" flush>
@@ -27,6 +31,13 @@ export const PostList = ({ posts }: PostListProps) => {
         onClick={() => setShowAddNewPost(true)}
       >
         Add Post
+      </Button>
+      <Button onClick={() => {
+        const firstPost = posts[0];
+        firstPost.content = "updated";
+        fakeUpdate.mutate(firstPost)
+      }}>
+        Fake update
       </Button>
       {showAddNewPost && (
         <AddPost onClose={() => setShowAddNewPost(false)}></AddPost>

@@ -1,15 +1,43 @@
-import { useMutation } from "@tanstack/react-query";
+import { onlineManager, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { CreatePostCommand } from "./models/CreatePostCommand";
+import { Post } from "./models/Post";
 import "./posts.css";
+import { v4 as uuid } from "uuid";
 
 export interface AddPostProps {
   onClose: () => void;
 }
 
 const AddPost = ({ onClose }: AddPostProps) => {
-  const mutation = useMutation<any, any, CreatePostCommand>(["createPosts"]);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<any, any, CreatePostCommand>(["createPosts"], {
+    onMutate: async (post: CreatePostCommand) => {
+      // Cancel current queries for the todos list
+      await queryClient.cancelQueries(["posts"]);
+
+      // Create optimistic todo
+      const optimisticPost: Post = {
+        id: uuid(),
+        creationDate: new Date().toLocaleDateString(),
+        ...post,
+      };
+
+      // Add optimistic todo to todos list
+      queryClient.setQueryData<Array<Post>>(["posts"], (old) => {
+        if (old) {
+          return [...old, optimisticPost];
+        } else {
+          return [optimisticPost];
+        }
+      });
+
+      // Return context with the optimistic todo
+      return { optimisticPost };
+    }
+  });
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");

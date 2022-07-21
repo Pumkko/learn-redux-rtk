@@ -54,51 +54,38 @@ queryClient.setQueryDefaults(["general"], {
   },
 });
 
+queryClient.setMutationDefaults(['updatePost'], {
+  mutationFn: (post) => {
+    console.log('updated ' + post);
+    return post;
+  },
+  onMutate: (updatedPost: Post) => {
+    queryClient.setQueryData<Post>(["posts", "any gibberrish here ?"], updatedPost);
+  }
+})
+
 queryClient.setMutationDefaults(["createPosts"], {
   mutationFn: (post) =>
-    axios.post(`https://localhost:7185/Post`, {
+    axios.post(`https://pwa-react-violinews.azurewebsites.net/Post`, {
       id: uuid(),
       creationDate: new Date().toLocaleDateString(),
       ...post,
     }),
-  onMutate: async (post: CreatePostCommand) => {
-    // Cancel current queries for the todos list
-    await queryClient.cancelQueries(["posts"]);
-
-    // Create optimistic todo
-    const optimisticPost: Post = {
-      id: uuid(),
-      creationDate: new Date().toLocaleDateString(),
-      ...post,
-    };
-
-    // Add optimistic todo to todos list
-    queryClient.setQueryData<Array<Post>>(["posts"], (old) => {
-      if (old) {
-        return [...old, optimisticPost];
-      } else {
-        return [optimisticPost];
+    onError: (error, variables, context) => {
+      queryClient.setQueryData<Array<Post>>(
+        ["posts"],
+        (old) =>
+          old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
+      );
+    },
+    retry: (failureCount, error) => {
+      if (error.code === "ERR_NETWORK") {
+        onlineManager.setOnline(false);
+        return true;
       }
-    });
 
-    // Return context with the optimistic todo
-    return { optimisticPost };
-  },
-  onError: (error, variables, context) => {
-    queryClient.setQueryData<Array<Post>>(
-      ["posts"],
-      (old) =>
-        old?.filter((todo) => todo.id !== context?.optimisticPost.id) ?? []
-    );
-  },
-  retry: (failureCount, error) => {
-    if (error.code === "ERR_NETWORK") {
-      onlineManager.setOnline(false);
-      return true;
-    }
-
-    return false;
-  },
+      return false;
+    },
 });
 
 export default queryClient;
